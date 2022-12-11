@@ -1,0 +1,1 @@
+Reading the (french) book: "Learn to program with Ocaml, algorithms and data structures"
