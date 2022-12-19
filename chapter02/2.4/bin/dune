@@ -1,3 +1,4 @@
 (executable
  (name main)
+ (modes byte exe) ; ocamldebug _build/default/bin/main.bc. Also see: `dune-project`.
  (libraries graphics))
