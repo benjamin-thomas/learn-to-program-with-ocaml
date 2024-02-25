@@ -1,0 +1,3 @@
+(executables
+ (names approx_pi2 approx_pi3)
+ (libraries unix))
