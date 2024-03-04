@@ -1,0 +1,3 @@
+(executables
+ (names sieve_of_eratosthenes primes)
+ (libraries))
