@@ -4,6 +4,8 @@
    Also see: ./sieve_of_eratosthenes.ml
 *)
 
+[@@@warning "-32"]
+
 module Via_seq = struct
   let rec make_primes (seq : int Seq.t) : int Seq.t =
     match seq () with
@@ -32,6 +34,29 @@ module Via_own = struct
 
   (** Builds a lazylist from [n], always increasing by 1 *)
   let rec lseq n = Cons (n, fun () -> lseq (n + 1))
+
+  let rec unfold f x =
+    let (h, h') = f x in
+    Cons (h, fun () -> unfold f h')
+  ;;
+
+  let ints = unfold (fun n -> (n, n + 1))
+  let nats = ints 0
+  let fibs = unfold (fun (a, b) -> (a, (b, a + b))) (0, 1)
+  let fibs = Seq.unfold (fun (a, b) -> Some (a, (b, a + b))) (0, 1)
+  let ints = Seq.unfold (fun n -> Some (n, n + 1))
+  let nats = Seq.ints 0
+
+  let to_seq lst =
+    Seq.unfold
+      (function
+        | [] -> None
+        | h :: t -> Some (h, t))
+      lst
+  ;;
+
+  let make_evens n = Cons (n, fun () -> lseq (n + 2))
+  let evens = make_evens (-2)
 
   let rec ltake n (Cons (h, tf)) =
     if n > 0 then
