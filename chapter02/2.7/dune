@@ -1,3 +1,4 @@
 (executables
- (names copy_file serialize deserialize)
+ (names copy_file serialize deserialize except)
+ ; (flags (:standard -noassert))
  (libraries))
