@@ -1,6 +1,5 @@
 (*
-   dune exec -w --no-print-directory --display=quiet chapter02/2.9/radix_book.exe 16 <(seq 32)
-   dune exec -w --no-print-directory --display=quiet chapter02/2.9/radix_book.exe 16 <(echo "7FFF\nA0")
+   rg --files | entr -c bash -c 'dune exec --no-print-directory --display=quiet chapter02/2.9/OCaml/radix_book.exe 16 < <(echo -e "ABC\nDEF\nFF")'
 *)
 
 open Printf
@@ -93,7 +92,7 @@ let check_digit n = if n < 0 || n >= base then invalid_arg @@ sprintf "Bad digit
        > ['A';'B';'C'] |> List.fold(fun acc n -> System.Convert.ToInt32(n)-55 + 16*acc) 0;;
        ival it: int = 2748
   |}*)
-let consume_stdin () =
+let run () =
   try
     while true do
       let str = read_line () in
@@ -102,20 +101,10 @@ let consume_stdin () =
       List.iter check_digit digits;
       List.iter (printf "%d ") digits;
       let v = List.fold_right (fun n acc -> (base * acc) + n) digits 0 in
-      (* let v = List.fold_left (fun acc n -> (base * acc) + n) 0 (List.rev digits) in *)
-      printf " -> %d\n" v
+      printf "\n -> %d\n\n" v
     done
   with
   | End_of_file -> ()
 ;;
 
-let () =
-  (* printf "Base is: %d\n" base;
-     List.iter print_char (list_of_string "hello");
-     print_endline "\n---";
-     printf "Digit for 0: %d\n" (digit_of_char '0');
-     printf "Digit for A: %d\n" (digit_of_char 'A');
-     printf "Digit for F: %d\n" (digit_of_char 'F'); *)
-  print_endline "---";
-  consume_stdin ()
-;;
+run ()
