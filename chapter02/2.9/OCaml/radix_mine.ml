@@ -25,11 +25,12 @@ let die msg =
 ;;
 
 let base10_of_char c =
-  match c with
-  | '0' .. '9' -> Some (Char.code c - Char.code '0')
-  | 'A' .. 'Z' -> Some (Char.code c - (Char.code 'A' - 10))
-  | 'a' .. 'z' -> Some (Char.code c - (Char.code 'a' - 10))
-  | _ -> None
+  Char.(
+    match c with
+    | '0' .. '9' -> Some (code c - code '0')
+    | 'A' .. 'Z' -> Some (code c - (code 'A' - 10))
+    | 'a' .. 'z' -> Some (code c - (code 'a' - 10))
+    | _ -> None)
 ;;
 
 let convert_to_base10 base =
@@ -39,7 +40,7 @@ let convert_to_base10 base =
         match base10_of_char c with
         | None -> (good, c :: bad)
         | Some n ->
-          if n < 0 || n >= base then
+          if n < 0 || n >= base || base > 36 || base < 2 then
             (good, c :: bad)
           else
             (n :: good, bad)
@@ -49,26 +50,43 @@ let convert_to_base10 base =
 
 let horner_rev base lst = List.fold_right (fun n acc -> (base * acc) + n) lst 0
 
+let print_int_sep n =
+  print_int n;
+  print_char ' '
+;;
+
+let string_of_chars ~sep chars =
+  let buf = Buffer.create 16 in
+  List.iteri
+    (fun i c ->
+      if i != 0 then Buffer.add_char buf sep;
+      Buffer.add_char buf c)
+    chars;
+  Buffer.contents buf
+;;
+
+let print_good chars value =
+  List.iter print_int_sep chars;
+  printf "-> %d\n\n" value
+;;
+
+let print_bad bad =
+  print_string
+  @@ red
+  ^ " Bad chars: "
+  ^ "["
+  ^ string_of_chars ~sep:',' (List.rev bad)
+  ^ "]"
+  ^ reset
+  ^ "\n\n"
+;;
+
 let handle_line base line =
+  print_endline line;
   let chars = List.init (String.length line) (String.get line) in
-  let () = print_endline line in
   match convert_to_base10 base chars with
-  | (good, []) ->
-    List.iter
-      (fun n ->
-        print_int n;
-        print_char ' ')
-      good;
-    let result = horner_rev base good in
-    printf " -> %d\n\n" result
-  | (_, bad) ->
-    print_string red;
-    print_string "  Bad chars: ";
-    List.iter print_char (List.rev bad);
-    print_string reset;
-    print_newline ();
-    print_newline ();
-    ()
+  | (good, []) -> print_good good (horner_rev base good)
+  | (_, bad) -> print_bad bad
 ;;
 
 let rec main_loop base =
