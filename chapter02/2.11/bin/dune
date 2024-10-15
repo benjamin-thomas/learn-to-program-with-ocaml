@@ -1,0 +1,8 @@
+(executables
+ (names turtle main)
+ (libraries graphics))
+
+(env
+ (dev
+  (flags
+   (:standard -warn-error -A))))
