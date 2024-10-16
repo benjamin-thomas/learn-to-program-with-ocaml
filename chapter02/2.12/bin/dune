@@ -1,0 +1,8 @@
+(executable
+ (name music)
+ (libraries graphics))
+
+(env
+ (dev
+  (flags
+   (:standard -warn-error -A))))
