@@ -1,0 +1,8 @@
+(executable
+ (name main)
+ (libraries fmt))
+
+(env
+ (dev
+  (flags
+   (:standard -warn-error -A))))
