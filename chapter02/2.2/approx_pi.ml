@@ -59,14 +59,14 @@ let n =
 In Excel:
 
 Col A        -> =RAND() over n lines...
-Col B        -> =SQRT(1-An^2) over n line...
+Col B        -> =SQRT(1- A^2) over n line...
 Col C Line 1 -> =4*AVERAGE(B:B) over 1 line
 
 *)
 let () =
   Random.init (Unix.gettimeofday () |> int_of_float);
   let p = ref 0 in
-  for k = 1 to n do
+  for _k = 1 to n do
     let x = Random.float 1. in
     let y = Random.float 1. in
     if (x *. x) +. (y *. y) <= 1. then p := !p + 1

@@ -1,0 +1,8 @@
+(executables
+ (names monte_carlo_01)
+ (libraries fmt graphics))
+
+(env
+ (dev
+  (flags
+   (:standard -warn-error -A))))
