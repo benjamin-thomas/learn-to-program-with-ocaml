@@ -38,8 +38,8 @@ let draw_dot ~is_inside ~on_inside ~x ~y =
 ;;
 
 let () =
-  let total_points = 40_000 in
-  let wsize = 400.0 in
+  let total_points = 160_000 in
+  let wsize = 800.0 in
   let wsize' = int_of_float wsize in
   let total_inside = ref 0 in
   Random.self_init ();

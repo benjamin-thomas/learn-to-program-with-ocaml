@@ -17,11 +17,13 @@ import Graphics.Gloss (
     circleSolid,
     color,
     green,
+    rectangleSolid,
     red,
     scale,
     simulate,
     translate,
     white,
+    withAlpha,
     yellow,
  )
 import Graphics.Gloss.Data.ViewPort (ViewPort)
@@ -31,6 +33,15 @@ import Data.Foldable qualified as F
 import Data.Sequence (Seq, (<|))
 import Data.Sequence qualified as S
 import System.Random (Random (randomR), StdGen, getStdGen)
+
+-- Text alignment is a bit quirky, so some other adjustments may be necessary unfortunately
+width :: Int
+width = 800
+
+maxPoints :: Int
+maxPoints = 400_000
+
+batchSize = 1000
 
 -- `length` is O(1) for the `Seq` type
 -- It behaves similarly to a list
@@ -60,20 +71,21 @@ view :: Model -> Picture
 view model =
     let totalPoints = (S.length model.inside + S.length model.outside)
         (x, y) = model.point
+        width' = fromIntegral width
         drawQuarterCircle =
-            translate (-200) (-200) $
+            translate (-(width' / 2)) (-(width' / 2)) $
                 color yellow $
-                    arc 0 90 400
+                    arc 0 90 width'
         drawPi =
             color white $
                 scale 0.3 0.3 $
                     Pictures
-                        [ translate (-100) 0 $
+                        [ translate (-850) 100 $
                             Text $
-                                show piApprox
-                        , translate (-100) 200 $
+                                "Points: " ++ show totalPoints
+                        , translate (-850) (-100) $
                             Text $
-                                show totalPoints
+                                "PI ~ " ++ show piApprox
                         ]
           where
             piApprox =
@@ -93,6 +105,7 @@ view model =
             [ drawQuarterCircle
             , drawPoints model.inside green
             , drawPoints model.outside red
+            , color (withAlpha 0.65 black) $ rectangleSolid (width' / 1.4) (width' / 4)
             , if 0 == totalPoints
                 then
                     Text "" -- Don't show ugly NaN
@@ -102,21 +115,26 @@ view model =
 nextModel :: Model -> Model
 nextModel model =
     let totalPoints = S.length model.inside + S.length model.outside
-     in if totalPoints >= 40_000
+     in if totalPoints >= maxPoints
             then model
             else
                 let
                     ((x, y), newStdGen) =
                         randomPoint model.stdGen
+                    width' = fromIntegral width
+                    newPoint =
+                        ( x * width' - (width' / 2)
+                        , y * width' - (width' / 2)
+                        )
                     (newInside, newOutside) =
                         if x * x + y * y <= 1
                             then
-                                ( (x * 400 - 200, y * 400 - 200) <| model.inside
+                                ( newPoint <| model.inside
                                 , model.outside
                                 )
                             else
                                 ( model.inside
-                                , (x * 400 - 200, y * 400 - 200) <| model.outside
+                                , newPoint <| model.outside
                                 )
                  in
                     model
@@ -130,7 +148,7 @@ nextModelBatch :: Int -> Model -> Model
 nextModelBatch n model = iterate nextModel model !! n
 
 update :: ViewPort -> Float -> Model -> Model
-update _ _secs = nextModelBatch 100
+update _ _secs = nextModelBatch batchSize
 
 main :: IO ()
 main =
@@ -138,7 +156,7 @@ main =
      in do
             g <- getStdGen
             simulate
-                (InWindow "Monte Carlo" (400, 400) (0, 0))
+                (InWindow "Monte Carlo" (width, width) (0, 0))
                 black
                 fps
                 (init' g)
