@@ -6,6 +6,7 @@ module G = Graphics
 
 let () =
   G.open_graph " 800x800";
+  G.set_window_title "Rosace";
   let pi = 4. *. atan 1. in
   let center_x = 400. in
   let center_y = 400. in
@@ -17,7 +18,6 @@ let () =
       (truncate @@ (center_y +. (offset *. sin (pi *. n))))
       circle_size
   in
-  print_endline "rosace";
   G.draw_circle 400 400 circle_size;
   circle @@ (1. /. 3.);
   circle @@ (2. /. 3.);
