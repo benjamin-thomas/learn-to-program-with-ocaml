@@ -1,5 +1,5 @@
 (executables
- (names monte_carlo_01)
+ (names monte_carlo_01 rosace)
  (libraries fmt graphics))
 
 (env
