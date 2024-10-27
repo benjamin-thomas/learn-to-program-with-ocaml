@@ -1,5 +1,5 @@
 (executables
- (names monte_carlo_01 rosace)
+ (names monte_carlo_01 rosace mandelbrot)
  (libraries fmt graphics))
 
 (env
